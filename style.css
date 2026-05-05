@@ -56,6 +56,23 @@ body::after {
 }
 
 /* ════════════════════════════════════════════════════════
+   EARLY SCREEN
+════════════════════════════════════════════════════════ */
+#early-screen {
+  position: fixed; inset: 0; z-index: 20000;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 2rem;
+}
+.early-text h2 {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--accent); margin-bottom: 1rem;
+}
+.early-text p { font-family: 'Unbounded', sans-serif; color: var(--text-dim); line-height: 1.6; }
+
+/* ════════════════════════════════════════════════════════
    INTRO SPLASH
 ════════════════════════════════════════════════════════ */
 #intro {
@@ -134,7 +151,7 @@ main { position: relative; z-index: 2; }
     radial-gradient(ellipse 75% 55% at 50% -5%, rgba(28,55,100,.6) 0%, transparent 65%),
     radial-gradient(ellipse 45% 35% at 85% 90%, rgba(139,0,32,.28) 0%, transparent 55%);
 }
-[data-mode="1"] #hero {
+[data-mode="0"] #hero {
   background:
     radial-gradient(ellipse 75% 55% at 50% -5%, rgba(120,10,30,.7) 0%, transparent 65%),
     radial-gradient(ellipse 45% 35% at 85% 90%, rgba(220,20,60,.2) 0%, transparent 55%);

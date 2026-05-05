@@ -6,8 +6,8 @@
    
    ⚠️ REQUIRED: Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY with actual values
 ══════════════════════════════════════════════════════ */
-const SB_URL = 'YOUR_SUPABASE_URL';
-const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SB_URL = 'https://tvceseobuvsegbjmrgug.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2Y2VzZW9idXZzZWdiam1yZ3VnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NTI1NzEsImV4cCI6MjA5MzUyODU3MX0.5IQUWqsljqiWpm0ymd5_YwO704stPOUUDEjiVy2cPig';
 
 let db = null;
 try {
@@ -17,6 +17,12 @@ try {
 } catch(e) {
   console.warn('Supabase initialization skipped. Fill in credentials in script.js to enable database features.');
 }
+
+/* ══════════════════════════════════════════════════════
+   BIRTHDAY DATE CONFIGURATION
+   Set the year, month (01-12), and day of the birthday!
+══════════════════════════════════════════════════════ */
+const BIRTHDAY_DATE = new Date('2026-05-12T00:00:00').getTime(); 
 
 /* ══════════════════════════════════════════════════════
    SHARED CONFETTI FACTORY
@@ -107,11 +113,11 @@ function createConfetti(canvas, opts = {}) {
    1. INTRO CONFETTI + SPLASH
 ══════════════════════════════════════════════════════ */
 let introConfetti;
-(() => {
+function startIntroConfetti() {
   const canvas = document.getElementById('intro-canvas');
   introConfetti = createConfetti(canvas, { count: 160, speed: 1.3, opacity: 1 });
   setTimeout(closeIntro, 3200);
-})();
+}
 
 function closeIntro() {
   const intro = document.getElementById('intro');
@@ -125,7 +131,7 @@ function closeIntro() {
 /* ══════════════════════════════════════════════════════
    2. PERSISTENT BACKGROUND CONFETTI (runs always)
 ══════════════════════════════════════════════════════ */
-(() => {
+function startBgConfetti() {
   const canvas = document.getElementById('bg-confetti');
   createConfetti(canvas, {
     count:   55,
@@ -133,7 +139,7 @@ function closeIntro() {
     opacity: 0.38,    // subtle — behind all content
     colors:  ['#dc143c','#c9a96e','#ffffff','#8b0020','#1a3055','#ffd700'],
   });
-})();
+}
 
 
 /* ══════════════════════════════════════════════════════
@@ -344,9 +350,28 @@ function initFadeIn(){
    BOOT
 ══════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',()=>{
-  loadSavedMode();
-  setupThemeToggle();
-  loadCarousel();
-  loadBdayPics();
-  initFadeIn();
+  const now = new Date().getTime();
+  
+  if (now < BIRTHDAY_DATE) {
+    // If visited before the set date, hide everything except the early screen
+    document.getElementById('early-screen').style.display = 'flex';
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('bg-confetti').style.display = 'none';
+    document.querySelector('main').style.display = 'none';
+    document.querySelector('footer').style.display = 'none';
+    
+    // Optionally dynamically display the target date
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(BIRTHDAY_DATE).toLocaleDateString(undefined, dateOptions);
+    document.getElementById('early-date-msg').innerHTML = `Come back on <strong style="color:var(--accent);">${formattedDate}</strong> to celebrate.`;
+  } else {
+    // Execute the birthday page normally
+    startIntroConfetti();
+    startBgConfetti();
+    loadSavedMode();
+    setupThemeToggle();
+    loadCarousel();
+    loadBdayPics();
+    initFadeIn();
+  }
 });
