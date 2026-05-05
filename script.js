@@ -6,8 +6,8 @@
    
    ⚠️ REQUIRED: Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY with actual values
 ══════════════════════════════════════════════════════ */
-const SB_URL = 'https://tvceseobuvsegbjmrgug.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2Y2VzZW9idXZzZWdiam1yZ3VnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NTI1NzEsImV4cCI6MjA5MzUyODU3MX0.5IQUWqsljqiWpm0ymd5_YwO704stPOUUDEjiVy2cPig';
+const SB_URL = "https://tvceseobuvsegbjmrgug.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2Y2VzZW9idXZzZWdiam1yZ3VnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NTI1NzEsImV4cCI6MjA5MzUyODU3MX0.5IQUWqsljqiWpm0ymd5_YwO704stPOUUDEjiVy2cPig";
 
 let db = null;
 try {
@@ -22,7 +22,7 @@ try {
    BIRTHDAY DATE CONFIGURATION
    Set the year, month (01-12), and day of the birthday!
 ══════════════════════════════════════════════════════ */
-const BIRTHDAY_DATE = new Date('2026-05-12T00:00:00').getTime(); 
+const BIRTHDAY_DATE = new Date('2026-05-12T06:17:00').getTime(); 
 
 /* ══════════════════════════════════════════════════════
    SHARED CONFETTI FACTORY
@@ -230,6 +230,9 @@ async function loadCarousel() {
 
   try {
     const { data, error } = await db.from('memories').select('image_url,caption').order('id');
+    if (error) {
+      console.error('Supabase error fetching memories:', error.message);
+    }
     if (!error && data?.length) rows = data;
   } catch(e) { 
     console.warn('memories error:', e.message); 
@@ -253,11 +256,17 @@ async function loadCarousel() {
     <div class="cw">
       <div class="cvp">
         <div class="ctr" id="ctr">
-          ${rows.map((r,i)=>`
+          ${rows.map((r,i)=>{
+            const isVid = r.image_url && r.image_url.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i);
+            return `
             <div class="csl${i===0?' active':''}">
-              <img src="${r.image_url}" alt="${r.caption||'Memory'}" loading="lazy" onerror="this.src='${BLANK}'"/>
+              ${isVid 
+                ? `<video src="${r.image_url}" autoplay loop muted playsinline></video>` 
+                : `<img src="${r.image_url}" alt="${r.caption||'Memory'}" loading="lazy" onerror="this.src='${BLANK}'"/>`
+              }
               ${r.caption?`<div class="ccap">${r.caption}</div>`:''}
-            </div>`).join('')}
+            </div>`;
+          }).join('')}
         </div>
       </div>
       <button class="cbtn prev" id="cPrev" aria-label="Prev">
@@ -285,14 +294,24 @@ async function loadCarousel() {
     dots[cur].classList.add('a');
   }
   
+  let isPaused = false;
   function resetAuto(){
     clearInterval(auto);
-    auto=setInterval(()=>go(cur+1),4000);
+    auto=setInterval(()=>{
+      if(!isPaused) go(cur+1);
+    }, 4000); // 4000ms = 4 seconds (Change this number to adjust speed)
   }
 
   document.getElementById('cPrev').onclick=()=>{go(cur-1);resetAuto();};
   document.getElementById('cNext').onclick=()=>{go(cur+1);resetAuto();};
   dots.forEach(d=>d.onclick=()=>{go(+d.dataset.i);resetAuto();});
+
+  // Pause auto-slide on hover/touch so videos or long captions aren't interrupted
+  box.addEventListener('mouseenter', () => isPaused = true);
+  box.addEventListener('mouseleave', () => isPaused = false);
+  box.addEventListener('touchstart', () => isPaused = true, { passive: true });
+  box.addEventListener('touchend', () => { setTimeout(() => isPaused = false, 2000) });
+
   resetAuto();
 
   let sx=0;
@@ -317,6 +336,9 @@ async function loadBdayPics(){
   
   try{
     const{data,error}=await db.from('birthday_pics').select('image_url').not('image_url','is',null).order('id');
+    if(error) {
+      console.error('Supabase error fetching birthday_pics:', error.message);
+    }
     if(!error&&data?.length)pics=data;
   }catch(e){
     console.warn('birthday_pics error:',e.message);
@@ -345,12 +367,60 @@ function initFadeIn(){
   document.querySelectorAll('.fu,.fu-l,.fu-r,.fu-s').forEach(el=>io.observe(el));
 }
 
+/* ══════════════════════════════════════════════════════
+   7. BACKGROUND MUSIC
+══════════════════════════════════════════════════════ */
+function initMusic() {
+  // ⚠️ Replace 'happy_birthday.mp3' with your actual audio file name
+  const bgMusic = new Audio('kwn_back of the club.mp3');
+  bgMusic.preload = 'auto'; // Helps buffer the 4-minute track
+  bgMusic.loop = true;
+
+  // Create a floating music toggle button
+  const musicBtn = document.createElement('button');
+  musicBtn.id = 'music-btn';
+  musicBtn.innerHTML = '🎵 Play Music';
+  musicBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 12px 20px; border-radius: 30px; background: var(--accent, #dc143c); color: #fff; border: none; font-weight: bold; font-family: inherit; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s ease;';
+  
+  musicBtn.onmouseover = () => musicBtn.style.transform = 'scale(1.05)';
+  musicBtn.onmouseout = () => musicBtn.style.transform = 'scale(1)';
+  
+  document.body.appendChild(musicBtn);
+
+  let isPlaying = false;
+
+  function toggleMusic(e) {
+    if (e) e.stopPropagation(); // Prevent double-firing from body click
+    if (isPlaying) {
+      bgMusic.pause();
+      isPlaying = false;
+      musicBtn.innerHTML = '🎵 Play Music';
+    } else {
+      bgMusic.currentTime = 0; // Always start the 4-minute song from the beginning
+      bgMusic.play().then(() => {
+        isPlaying = true;
+        musicBtn.innerHTML = '⏸️ Pause Music';
+      }).catch(err => console.log('Audio playback prevented:', err));
+    }
+  }
+
+  musicBtn.addEventListener('click', toggleMusic);
+
+  // Start playing automatically on the user's first interaction anywhere on the page
+  document.body.addEventListener('click', function firstInteraction() {
+    if (!isPlaying) toggleMusic();
+    document.body.removeEventListener('click', firstInteraction);
+  }, { once: true });
+}
 
 /* ══════════════════════════════════════════════════════
    BOOT
 ══════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',()=>{
   const now = new Date().getTime();
+  
+  // Initialize music immediately so it plays from the beginning of the page load
+  initMusic();
   
   if (now < BIRTHDAY_DATE) {
     // If visited before the set date, hide everything except the early screen
