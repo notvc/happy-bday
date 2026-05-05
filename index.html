@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="0">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday 🎂</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Unbounded:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ════════════════════════ INTRO SPLASH ════════════════════ -->
+  <div id="intro">
+    <canvas id="intro-canvas"></canvas>
+    <div class="intro-text">
+      <div class="intro-hb">Happy Birthday!</div>
+      <p class="intro-sub">✦ &nbsp; Celebrating you &nbsp; ✦</p>
+    </div>
+    <button class="intro-skip" onclick="closeIntro()">Skip ›</button>
+  </div>
+
+  <!-- Persistent background confetti -->
+  <canvas id="bg-confetti"></canvas>
+
+  <div id="toast"></div>
+
+  <main>
+
+    <!-- ══════════════════════ HERO ══════════════════════════ -->
+    <section id="hero">
+
+      <!-- Curved SVG title -->
+      <div class="svg-wrap fu-s">
+        <svg viewBox="0 0 880 175" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <path id="arc" d="M 40,145 C 220,38 660,38 840,145" fill="none"/>
+          </defs>
+          <text class="hb-text">
+            <textPath href="#arc" startOffset="50%" text-anchor="middle">
+              ✦  Happy Birthday  ✦
+            </textPath>
+          </text>
+        </svg>
+      </div>
+
+      <p class="hero-sub fu">A day as brilliant as you</p>
+
+      <!-- 🎂 CAKE ANIMATION -->
+      <div class="cake-scene fu-s">
+
+        <!-- sparkles -->
+        <div class="sparkle s1">✦</div>
+        <div class="sparkle s2">★</div>
+        <div class="sparkle s3">✦</div>
+        <div class="sparkle s4">★</div>
+        <div class="sparkle s5">✦</div>
+        <div class="sparkle s6">★</div>
+        <div class="sparkle s7">✦</div>
+        <div class="sparkle s8">★</div>
+
+        <!-- glow shadow -->
+        <div class="cake-glow"></div>
+
+        <!-- floating cake -->
+        <div class="cake-float">
+
+          <!-- Candles row -->
+          <div class="candles-row">
+            <div class="candle"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div>
+            <div class="candle"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div>
+          </div>
+
+          <!-- Top tier -->
+          <div class="tier t-top">
+            <div class="frosting-top">
+              <svg viewBox="0 0 148 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,14 Q12,2 24,10 Q36,18 48,6 Q60,0 72,8 Q84,16 96,4 Q108,0 120,10 Q132,18 148,4 L148,14 Z" fill="#ede4d8"/>
+              </svg>
+            </div>
+            <div class="tier-body"></div>
+          </div>
+
+          <!-- Mid tier -->
+          <div class="tier t-mid">
+            <div class="frosting-top">
+              <svg viewBox="0 0 206 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,14 Q14,2 28,10 Q42,18 56,5 Q70,0 84,9 Q98,18 112,4 Q126,0 140,10 Q154,18 170,5 Q184,0 206,10 L206,14 Z" fill="#ede4d8"/>
+              </svg>
+            </div>
+            <div class="tier-body" style="position:relative;">
+              <div class="ribbon">
+                <div class="ribbon-bow"></div>
+              </div>
+              <!-- drips from mid tier -->
+              <div class="drips" style="bottom:-14px;">
+                <div class="drip"></div><div class="drip"></div><div class="drip"></div>
+                <div class="drip"></div><div class="drip"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom tier -->
+          <div class="tier t-bot">
+            <div class="frosting-top">
+              <svg viewBox="0 0 270 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,14 Q18,2 36,10 Q54,18 72,5 Q90,0 108,9 Q126,18 144,4 Q162,0 180,10 Q198,18 216,5 Q234,0 252,10 Q260,14 270,7 L270,14 Z" fill="#ede4d8"/>
+              </svg>
+            </div>
+            <div class="tier-body" style="position:relative;">
+              <!-- drips from bottom tier -->
+              <div class="drips" style="bottom:-15px;">
+                <div class="drip"></div><div class="drip"></div><div class="drip"></div>
+                <div class="drip"></div><div class="drip"></div><div class="drip"></div>
+              </div>
+              <!-- pearl decorations -->
+              <div class="pearls">
+                <div class="pearl"></div><div class="pearl"></div><div class="pearl"></div>
+                <div class="pearl"></div><div class="pearl"></div><div class="pearl"></div>
+                <div class="pearl"></div>
+              </div>
+            </div>
+            <div class="plate"></div>
+          </div>
+
+        </div><!-- /cake-float -->
+      </div><!-- /cake-scene -->
+
+      <div class="scrl">
+        <span>scroll</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════ MEMORIES CAROUSEL ═════════════════ -->
+    <section id="memories">
+      <p class="sec-label fu-l">a collection of moments</p>
+      <h2 class="sec-title fu">Our Memories</h2>
+      <span class="sec-rule fu"></span>
+      <div id="carouselBox" class="fu-s">
+        <div class="cload"><div class="spin"></div>Loading memories…</div>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════ HAPPY BIRTHDAY ════════════════════ -->
+    <section id="birthday">
+      <p class="bd-eye fu-l">with all my love</p>
+      <h2 class="bd-title fu-s">Happy Birthday</h2>
+      <p class="bd-msg fu">
+        Today the world is <em>brighter</em> because you exist in it.
+        Every laugh, every memory, every quiet moment shared —
+        they all lead back to <em>you</em>. May this year bring you
+        everything your heart has ever wished for, and may every day
+        feel as <em>extraordinary</em> as you truly are. Here's to you. 🥂
+      </p>
+
+      <!-- Birthday Pics — only shown when Supabase returns non-null rows -->
+      <div id="bpics">
+        <p class="sec-label fu">moments captured</p>
+        <div class="bp-grid" id="bpGrid"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Made with ♥ &nbsp;·&nbsp; Double-click anywhere to cycle colour modes
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>
