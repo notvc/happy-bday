@@ -8,6 +8,7 @@ A beautiful, interactive, and customizable birthday website. Featuring personali
 * **CSS Animations:** Floating animated birthday cake with flickering candles and background sparkles.
 * **Memories Carousel:** Fetches images and custom captions directly from a database.
 * **Dynamic Birthday Gallery:** Loads a secondary grid of birthday pictures dynamically.
+* **Early Access Screen:** Automatically hides the main content and shows an "early" screen if the visitor opens the page before the actual birthday.
 * **Theme Toggling:** Double-click (desktop) or double-tap (mobile) anywhere to cycle through 3 different color modes (Red, Navy, Black). The chosen theme saves to local storage.
 
 ## 🚀 Setup Instructions
@@ -17,7 +18,8 @@ A beautiful, interactive, and customizable birthday website. Featuring personali
    * Create a new project at [Supabase](https://supabase.com/).
    * Get your Project URL and anon/public key.
    * Open `script.js` and replace `YOUR_SUPABASE_URL` and `YOUR_SUPABASE_ANON_KEY` with your actual credentials.
-3. **Host your site:** You can easily host this folder using GitHub Pages, Vercel, Netlify, or simply open `index.html` in your browser for local testing.
+3. **Set the Birthday Date:** Open `script.js` and update the `BIRTHDAY_DATE` variable (e.g., `'2026-05-12T00:00:00'`) to exactly when the page should unlock.
+4. **Host your site:** You can easily host this folder using GitHub Pages, Vercel, Netlify, or simply open `index.html` in your browser for local testing.
 
 ## 🗄️ Database Schema (Supabase)
 
