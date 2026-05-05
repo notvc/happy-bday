@@ -180,7 +180,7 @@ main { position: relative; z-index: 2; }
 }
 .hero-sub {
   font-family: 'Unbounded', sans-serif;
-  font-size: .55rem; letter-spacing: .4em;
+  font-size: .55rem; letter-spacing: .6em;
   color: var(--accent); text-transform: uppercase;
   margin-bottom: 3rem; opacity: .8;
 }
@@ -200,11 +200,11 @@ main { position: relative; z-index: 2; }
   position: relative;
   display: flex; flex-direction: column;
   align-items: center;
-  animation: cakeFloat 3.8s ease-in-out infinite;
+  animation: cakeFloat 3.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 @keyframes cakeFloat {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(-14px); }
+  0%,100% { transform: translateY(0) rotate(-1deg); }
+  50%     { transform: translateY(-14px) rotate(1deg); }
 }
 
 /* ── CANDLES ── */
@@ -229,8 +229,9 @@ main { position: relative; z-index: 2; }
   margin-bottom: 1px;
 }
 @keyframes flicker {
-  from { transform: scaleX(1) scaleY(1) rotate(-2deg); opacity: 1; }
-  to   { transform: scaleX(.8) scaleY(1.15) rotate(3deg); opacity: .85; }
+  0%   { transform: scaleX(1) scaleY(1) rotate(-2deg); opacity: 1; }
+  50%  { transform: scaleX(.9) scaleY(1.05) rotate(1deg); opacity: .9; }
+  100% { transform: scaleX(.8) scaleY(1.15) rotate(3deg); opacity: .85; }
 }
 /* randomise each flame */
 .candle:nth-child(1) .flame { --fd:.38s; --fdd:0s; }
@@ -375,8 +376,14 @@ main { position: relative; z-index: 2; }
   background: #ede4d8;
   border-radius: 0 0 50% 50%;
   opacity: .85;
+  animation: dripPulse 2.5s ease-in-out infinite alternate;
 }
-.drip:nth-child(even) { height: 12px; width: 7px; margin-top: 4px; }
+.drip:nth-child(even) { height: 12px; width: 7px; margin-top: 4px; animation-duration: 3s; animation-delay: .5s; }
+
+@keyframes dripPulse {
+  0% { transform: scaleY(1); opacity: .85; }
+  100% { transform: scaleY(1.1); opacity: 1; }
+}
 
 /* plate */
 .plate {
@@ -438,7 +445,7 @@ main { position: relative; z-index: 2; }
    MEMORIES
 ════════════════════════════════════════════════════════ */
 #memories {
-  padding: 6rem 1.5rem; position: relative;
+  padding: 8rem 1.5rem; position: relative;
   background: linear-gradient(180deg, transparent 0%, var(--bg2) 12%, var(--bg2) 88%, transparent 100%);
   transition: background .65s ease;
 }
@@ -508,7 +515,7 @@ main { position: relative; z-index: 2; }
    BIRTHDAY SECTION
 ════════════════════════════════════════════════════════ */
 #birthday {
-  padding:7rem 1.5rem 6rem; text-align:center; position:relative;
+  padding:9rem 1.5rem 8rem; text-align:center; position:relative;
   background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(139,0,32,.1) 0%,transparent 65%);
 }
 [data-mode="1"] #birthday{background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(180,0,30,.18) 0%,transparent 65%);}
@@ -530,7 +537,7 @@ main { position: relative; z-index: 2; }
 .bd-msg{
   max-width:620px;margin:0 auto 4rem;
   font-size:clamp(1.1rem,2.4vw,1.45rem);
-  font-style:italic;line-height:1.95;opacity:.88;
+  font-style:italic;line-height:2.2;opacity:.88;
 }
 .bd-msg em{font-style:normal;color:var(--accent);font-weight:600;}
 #bpics{display:none;}
@@ -559,12 +566,35 @@ footer{
 .fu-s{transform:scale(.92);}
 .fu.vis,.fu-l.vis,.fu-r.vis,.fu-s.vis{opacity:1;transform:none;}
 
+/* ════════════════════════════════════════════════════════
+   MUSIC BUTTON
+════════════════════════════════════════════════════════ */
+#music-btn {
+  position: fixed; bottom: 2rem; left: 2rem; z-index: 30000;
+  padding: .75rem 1.4rem; border-radius: 2rem;
+  background: rgba(0,0,0,.5); border: 1px solid var(--border);
+  color: var(--text); font-family: 'Unbounded', sans-serif;
+  font-size: .55rem; letter-spacing: .15em; text-transform: uppercase;
+  cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: transform .3s ease, background .3s, border-color .3s;
+}
+#music-btn:hover {
+  transform: translateY(-4px);
+  background: var(--surface2);
+  border-color: var(--accent);
+}
+
 @media(max-width:580px){
+  #hero { padding: 3rem 1rem 4rem; }
   .hb-text{font-size:26px;}
-  .cbtn.prev{left:6px;} .cbtn.next{right:6px;}
-  .cake-scene{width:260px;height:330px;transform:scale(.88);}
-  .countdown-container { gap: 0.6rem; margin-top: 1.5rem; }
+  .cbtn.prev{left:-10px;} .cbtn.next{right:-10px;}
+  .cake-scene{width:260px;height:330px;transform:scale(.75);}
+  .countdown-container { gap: 0.6rem; margin-top: 1.5rem; flex-wrap: wrap; }
   .time-box { padding: 0.8rem 0.5rem; min-width: 65px; }
   .time-box span.num { font-size: 1.5rem; }
   .time-box span.label { font-size: 0.5rem; }
+  #memories { padding: 5rem 1rem; }
+  #birthday { padding: 5rem 1rem 4rem; }
+  .bp-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  #music-btn { bottom: 1.2rem; left: 1.2rem; padding: .65rem 1.2rem; font-size: .5rem; }
 }

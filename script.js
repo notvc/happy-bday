@@ -195,12 +195,17 @@ function setupThemeToggle() {
 
   // Mobile: double-tap detection
   let lastTap = 0;
+  let lastTapY = 0;
+  document.body.addEventListener('touchstart', e => {
+    lastTapY = e.touches[0].clientY;
+  }, { passive: true });
   document.body.addEventListener('touchend', e => {
     if (e.target.closest('button,a,input')) return;
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
+    const endY = e.changedTouches[0].clientY;
     
-    if (tapLength < 300 && tapLength > 0) {
+    if (tapLength < 250 && tapLength > 0 && Math.abs(endY - lastTapY) < 15) {
       e.preventDefault();
       cycleTheme();
     }
@@ -307,8 +312,8 @@ async function loadCarousel() {
   dots.forEach(d=>d.onclick=()=>{go(+d.dataset.i);resetAuto();});
 
   // Pause auto-slide on hover/touch so videos or long captions aren't interrupted
-  box.addEventListener('mouseenter', () => isPaused = true);
-  box.addEventListener('mouseleave', () => isPaused = false);
+  box.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') isPaused = true; });
+  box.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') isPaused = false; });
   box.addEventListener('touchstart', () => isPaused = true, { passive: true });
   box.addEventListener('touchend', () => { setTimeout(() => isPaused = false, 2000) });
 
@@ -363,8 +368,14 @@ function initFadeIn(){
       setTimeout(()=>e.target.classList.add('vis'),i*90);
       io.unobserve(e.target);
     });
-  },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
-  document.querySelectorAll('.fu,.fu-l,.fu-r,.fu-s').forEach(el=>io.observe(el));
+  },{threshold:0.1,rootMargin:'0px 0px -20px 0px'});
+  
+  const observeAll = () => {
+    document.querySelectorAll('.fu,.fu-l,.fu-r,.fu-s').forEach(el=>io.observe(el));
+  };
+  
+  observeAll();
+  new MutationObserver(observeAll).observe(document.body, { childList: true, subtree: true });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -380,10 +391,6 @@ function initMusic() {
   const musicBtn = document.createElement('button');
   musicBtn.id = 'music-btn';
   musicBtn.innerHTML = '🎵 Play Music';
-  musicBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 30000; padding: 12px 20px; border-radius: 30px; background: var(--accent, #dc143c); color: #fff; border: none; font-weight: bold; font-family: inherit; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s ease;';
-  
-  musicBtn.onmouseover = () => musicBtn.style.transform = 'scale(1.05)';
-  musicBtn.onmouseout = () => musicBtn.style.transform = 'scale(1)';
   
   document.body.appendChild(musicBtn);
 
