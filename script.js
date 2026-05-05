@@ -380,7 +380,7 @@ function initMusic() {
   const musicBtn = document.createElement('button');
   musicBtn.id = 'music-btn';
   musicBtn.innerHTML = '🎵 Play Music';
-  musicBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 12px 20px; border-radius: 30px; background: var(--accent, #dc143c); color: #fff; border: none; font-weight: bold; font-family: inherit; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s ease;';
+  musicBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 30000; padding: 12px 20px; border-radius: 30px; background: var(--accent, #dc143c); color: #fff; border: none; font-weight: bold; font-family: inherit; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s ease;';
   
   musicBtn.onmouseover = () => musicBtn.style.transform = 'scale(1.05)';
   musicBtn.onmouseout = () => musicBtn.style.transform = 'scale(1)';
@@ -388,6 +388,15 @@ function initMusic() {
   document.body.appendChild(musicBtn);
 
   let isPlaying = false;
+
+  // Attempt to autoplay music immediately on load
+  bgMusic.play().then(() => {
+    isPlaying = true;
+    musicBtn.innerHTML = '⏸️ Pause Music';
+  }).catch(() => {
+    // The browser intentionally blocked autoplay. This is completely normal.
+    // Our click listener will automatically start the music on the user's first click instead.
+  });
 
   function toggleMusic(e) {
     if (e) e.stopPropagation(); // Prevent double-firing from body click
