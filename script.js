@@ -364,6 +364,22 @@ document.addEventListener('DOMContentLoaded',()=>{
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(BIRTHDAY_DATE).toLocaleDateString(undefined, dateOptions);
     document.getElementById('early-date-msg').innerHTML = `Come back on <strong style="color:var(--accent);">${formattedDate}</strong> to celebrate.`;
+
+    // Start Countdown
+    function updateCountdown() {
+      const currentTime = new Date().getTime();
+      const diff = BIRTHDAY_DATE - currentTime;
+      if (diff <= 0) {
+        location.reload(); // Refresh the page the moment it's time!
+        return;
+      }
+      document.getElementById('cd-days').textContent = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+      document.getElementById('cd-hours').textContent = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+      document.getElementById('cd-minutes').textContent = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+      document.getElementById('cd-seconds').textContent = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   } else {
     // Execute the birthday page normally
     startIntroConfetti();
