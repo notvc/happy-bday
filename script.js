@@ -383,7 +383,7 @@ function initFadeIn(){
 ══════════════════════════════════════════════════════ */
 function initMusic() {
   // ⚠️ Replace 'happy_birthday.mp3' with your actual audio file name
-  const bgMusic = new Audio('kwn_back of the club.mp3');
+  const bgMusic = new Audio('Drake-ft-Teezo-Amen.mp3');
   bgMusic.preload = 'auto'; // Helps buffer the 4-minute track
   bgMusic.loop = true;
 
