@@ -4,6 +4,15 @@
    TABLE birthday_pics → id, image_url
    Enable RLS + SELECT policy for anon on both.
    
+   📋 SETUP CHECKLIST:
+   1. Create a Supabase project at https://supabase.com/
+   2. Create the two tables (memories, birthday_pics) with the schema above
+   3. Upload images to Supabase Storage
+   4. Add image_url entries to the tables
+   5. Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY below
+   6. Add your music file (happy_birthday.mp3) to the project directory
+   7. Deploy the project
+   
    ⚠️ REQUIRED: Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY with actual values
 ══════════════════════════════════════════════════════ */
 const SB_URL = "https://tvceseobuvsegbjmrgug.supabase.co";
@@ -237,10 +246,20 @@ async function loadCarousel() {
     const { data, error } = await db.from('memories').select('image_url,caption').order('id');
     if (error) {
       console.error('Supabase error fetching memories:', error.message);
+      throw new Error(error.message);
     }
     if (!error && data?.length) rows = data;
   } catch(e) { 
-    console.warn('memories error:', e.message); 
+    console.warn('memories error:', e.message);
+    box.innerHTML = `
+      <div class="cload" style="flex-direction:column;gap:.9rem;">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".35">
+          <path d="M12 9v2m0 4v2m1.343-11.657l-1.414 1.414m2.828 2.828l1.414-1.414m-5.656 5.656l-1.414-1.414m2.828-2.828l1.414 1.414M9 12a3 3 0 1 1 6 0 3 3 0 0 1-6 0Z"/>
+        </svg>
+        <span>⚠️ Unable to load memories</span>
+        <span style="opacity:.4;font-size:.5rem;">Check Supabase connection and database setup</span>
+      </div>`;
+    return;
   }
 
   if (!rows.length) {
@@ -274,11 +293,11 @@ async function loadCarousel() {
           }).join('')}
         </div>
       </div>
-      <button class="cbtn prev" id="cPrev" aria-label="Prev">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <button class="cbtn prev" id="cPrev" aria-label="Previous memory">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <button class="cbtn next" id="cNext" aria-label="Next">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <button class="cbtn next" id="cNext" aria-label="Next memory">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <div class="cdots">
         ${rows.map((_,i)=>`<div class="dot${i===0?' a':''}" data-i="${i}"></div>`).join('')}
@@ -310,6 +329,15 @@ async function loadCarousel() {
   document.getElementById('cPrev').onclick=()=>{go(cur-1);resetAuto();};
   document.getElementById('cNext').onclick=()=>{go(cur+1);resetAuto();};
   dots.forEach(d=>d.onclick=()=>{go(+d.dataset.i);resetAuto();});
+
+  // Keyboard navigation support for carousel
+  const carouselKeyHandler = (e) => {
+    if (box.closest(':hover')) {
+      if (e.key === 'ArrowLeft') { go(cur-1); resetAuto(); }
+      if (e.key === 'ArrowRight') { go(cur+1); resetAuto(); }
+    }
+  };
+  document.addEventListener('keydown', carouselKeyHandler);
 
   // Pause auto-slide on hover/touch so videos or long captions aren't interrupted
   box.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') isPaused = true; });
@@ -383,8 +411,9 @@ function initFadeIn(){
 ══════════════════════════════════════════════════════ */
 function initMusic() {
   // ⚠️ Replace 'happy_birthday.mp3' with your actual audio file name
-  const bgMusic = new Audio('Drake-ft-Teezo-Amen.mp3');
-  bgMusic.preload = 'auto'; // Helps buffer the 4-minute track
+  // The Audio constructor only accepts ONE file path
+  const bgMusic = new Audio('kwn_back_of_the_club.mp3');
+  bgMusic.preload = 'auto'; // Helps buffer the audio track
   bgMusic.loop = true;
 
   // Create a floating music toggle button
@@ -400,9 +429,10 @@ function initMusic() {
   bgMusic.play().then(() => {
     isPlaying = true;
     musicBtn.innerHTML = '⏸️ Pause Music';
-  }).catch(() => {
-    // The browser intentionally blocked autoplay. This is completely normal.
+  }).catch((err) => {
+    // The browser intentionally blocked autoplay or file not found. This is normal.
     // Our click listener will automatically start the music on the user's first click instead.
+    console.log('Autoplay prevented or file unavailable:', err);
   });
 
   function toggleMusic(e) {
@@ -412,11 +442,15 @@ function initMusic() {
       isPlaying = false;
       musicBtn.innerHTML = '🎵 Play Music';
     } else {
-      bgMusic.currentTime = 0; // Always start the 4-minute song from the beginning
+      bgMusic.currentTime = 0; // Start the song from the beginning
       bgMusic.play().then(() => {
         isPlaying = true;
         musicBtn.innerHTML = '⏸️ Pause Music';
-      }).catch(err => console.log('Audio playback prevented:', err));
+      }).catch(err => {
+        console.log('Audio playback prevented:', err);
+        // Update button even if playback failed
+        musicBtn.innerHTML = '🎵 Play Music (unavailable)';
+      });
     }
   }
 

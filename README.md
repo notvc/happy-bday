@@ -2,6 +2,16 @@
 
 A beautiful, interactive, and customizable birthday website. Featuring personalized messages, a floating cake animation, a memories carousel, and dynamically loaded galleries.
 
+## 📚 Documentation
+
+| Document | Purpose |
+|----------|---------|
+| **SETUP_GUIDE.md** | 📋 Complete setup checklist & instructions |
+| **FIXES_SUMMARY.md** | 🔧 All improvements and bugs fixed |
+| **TROUBLESHOOTING.md** | 🆘 Quick problem solving reference |
+
+**Start here:** [SETUP_GUIDE.md](SETUP_GUIDE.md)
+
 ## ✨ Features
 
 * **Interactive Intro:** Confetti animation splash screen.
@@ -10,6 +20,9 @@ A beautiful, interactive, and customizable birthday website. Featuring personali
 * **Dynamic Birthday Gallery:** Loads a secondary grid of birthday pictures dynamically.
 * **Early Access Screen:** Automatically hides the main content and shows an "early" screen if the visitor opens the page before the actual birthday.
 * **Theme Toggling:** Double-click (desktop) or double-tap (mobile) anywhere to cycle through 3 different color modes (Red, Navy, Black). The chosen theme saves to local storage.
+* **Keyboard Navigation:** Use arrow keys to navigate the carousel.
+* **Accessibility:** Full keyboard navigation support, proper focus indicators, and screen reader friendly.
+* **Error Handling:** Friendly error messages if database or audio fails.
 
 ## 🚀 Setup Instructions
 

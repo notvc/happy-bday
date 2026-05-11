@@ -56,6 +56,22 @@ body::after {
 }
 
 /* ════════════════════════════════════════════════════════
+   ACCESSIBILITY & FOCUS STATES
+════════════════════════════════════════════════════════ */
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Skip to main content link (optional) */
+.skip-link {
+  position: absolute; top: -40px; left: 0;
+  background: var(--accent); color: #000;
+  padding: 8px; z-index: 100;
+  text-decoration: none; border-radius: 0 0 4px 0;
+}
+.skip-link:focus-visible { top: 0; }
+
+/* ════════════════════════════════════════════════════════
    EARLY SCREEN
 ════════════════════════════════════════════════════════ */
 #early-screen {
@@ -119,6 +135,7 @@ body::after {
   transition: color .3s, border-color .3s;
 }
 .intro-skip:hover { color: rgba(255,255,255,.75); border-color: rgba(220,20,60,.5); }
+.intro-skip:focus-visible { outline: 2px solid rgba(220,20,60,.8); outline-offset: 2px; }
 
 /* ── PERSISTENT BG CONFETTI CANVAS ─────────────────────── */
 #bg-confetti {
@@ -498,10 +515,13 @@ main { position: relative; z-index: 2; }
   transition:background .3s,border-color .3s,transform .3s;
 }
 .cbtn:hover{background:var(--accent-dim);border-color:var(--accent);transform:translateY(-50%) scale(1.1);}
+.cbtn:focus-visible{outline:2px solid var(--accent);outline-offset:-4px;}
 .cbtn.prev{left:-23px;} .cbtn.next{right:-23px;}
 .cdots{display:flex;justify-content:center;gap:.5rem;margin-top:1.4rem;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);cursor:pointer;transition:background .3s,width .3s;}
 .dot.a{background:var(--accent);width:20px;border-radius:3px;}
+.dot:hover{background:var(--accent);opacity:.8;}
+.dot:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:50%;}
 .cload{
   height:360px;display:flex;align-items:center;justify-content:center;
   flex-direction:column;gap:1rem;
@@ -582,6 +602,10 @@ footer{
   transform: translateY(-4px);
   background: var(--surface2);
   border-color: var(--accent);
+}
+#music-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 @media(max-width:580px){
