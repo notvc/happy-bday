@@ -31,7 +31,7 @@ try {
    BIRTHDAY DATE CONFIGURATION
    Set the year, month (01-12), and day of the birthday!
 ══════════════════════════════════════════════════════ */
-const BIRTHDAY_DATE = new Date('2026-05-12T00:00:00').getTime();
+const BIRTHDAY_DATE = new Date('2026-05-11T00:00:00').getTime();
 
 /* ══════════════════════════════════════════════════════
    SHARED CONFETTI FACTORY
