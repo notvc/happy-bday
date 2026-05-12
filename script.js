@@ -285,7 +285,7 @@ async function loadCarousel() {
             return `
             <div class="csl${i===0?' active':''}">
               ${isVid 
-                ? `<video src="${r.image_url}" autoplay loop muted playsinline></video>` 
+                ? `<video src="${r.image_url}" controls autoplay loop muted playsinline onerror="this.style.display='none'"></video>` 
                 : `<img src="${r.image_url}" alt="${r.caption||'Memory'}" loading="lazy" onerror="this.src='${BLANK}'"/>`
               }
               ${r.caption?`<div class="ccap">${r.caption}</div>`:''}
