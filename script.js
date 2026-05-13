@@ -509,7 +509,7 @@ function initFadeIn(){
 function initMusic() {
   // ⚠️ Replace 'happy_birthday.mp3' with your actual audio file name
   // The Audio constructor only accepts ONE file path
-  const bgMusic = new Audio('kwn_back_of_the_club.mp3');
+  const bgMusic = new Audio('LookWhatYouveDone.mp3');
   bgMusic.preload = 'auto'; // Helps buffer the audio track
   bgMusic.loop = true;
 
