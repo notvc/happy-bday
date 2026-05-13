@@ -285,7 +285,7 @@ async function loadCarousel() {
             return `
             <div class="csl${i===0?' active':''}">
               ${isVid 
-                ? `<video src="${r.image_url}" controls autoplay loop muted playsinline onerror="this.style.display='none'"></video>` 
+                ? `<video src="${r.image_url}" autoplay loop muted playsinline onerror="this.style.display='none'"></video>` 
                 : `<img src="${r.image_url}" alt="${r.caption||'Memory'}" loading="lazy" onerror="this.src='${BLANK}'"/>`
               }
               ${r.caption?`<div class="ccap">${r.caption}</div>`:''}
@@ -358,32 +358,129 @@ async function loadCarousel() {
 
 
 /* ══════════════════════════════════════════════════════
-   5. BIRTHDAY PICS (conditional)
+   5. BIRTHDAY PICS (conditional) — Carousel
 ══════════════════════════════════════════════════════ */
 async function loadBdayPics(){
   if (!db) return;
   
   const sec=document.getElementById('bpics');
-  const grid=document.getElementById('bpGrid');
+  const box=document.getElementById('bpCarousel');
   let pics=[];
   
   try{
-    const{data,error}=await db.from('birthday_pics').select('image_url').not('image_url','is',null).order('id');
+    const{data,error}=await db.from('birthday_pics').select('image_url').order('id');
     if(error) {
       console.error('Supabase error fetching birthday_pics:', error.message);
+      throw new Error(error.message);
     }
     if(!error&&data?.length)pics=data;
   }catch(e){
     console.warn('birthday_pics error:',e.message);
+    box.innerHTML=`
+      <div class="cload" style="flex-direction:column;gap:.9rem;">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".35">
+          <path d="M12 9v2m0 4v2m1.343-11.657l-1.414 1.414m2.828 2.828l1.414-1.414m-5.656 5.656l-1.414-1.414m2.828-2.828l1.414 1.414M9 12a3 3 0 1 1 6 0 3 3 0 0 1-6 0Z"/>
+        </svg>
+        <span>⚠️ Unable to load birthday moments</span>
+        <span style="opacity:.4;font-size:.5rem;">Check Supabase connection and database setup</span>
+      </div>`;
+    sec.style.display='block';
+    return;
   }
   
-  if(!pics.length)return;
+  if(!pics.length){
+    box.innerHTML=`
+      <div class="cload" style="flex-direction:column;gap:.9rem;">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".35">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>No birthday moments yet</span>
+        <span style="opacity:.4;font-size:.5rem;">Moments will appear as they're added</span>
+      </div>`;
+    sec.style.display='block';
+    return;
+  }
   
-  grid.innerHTML=pics.map(p=>`
-    <div class="bp-item">
-      <img src="${p.image_url}" alt="Birthday moment" loading="lazy" onerror="this.parentElement.style.display='none'"/>
-    </div>`).join('');
+  const BLANK = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Crect fill='%230d1b2a' width='100%25' height='100%25'/%3E%3Ctext fill='%236a82a0' x='50%25' y='50%25' text-anchor='middle' dy='.35em' font-size='13' font-family='monospace'%3EImage unavailable%3C/text%3E%3C/svg%3E`;
+
+  box.innerHTML=`
+    <div class="cw">
+      <div class="cvp">
+        <div class="ctr" id="bpTrack">
+          ${pics.map((p,i)=>{
+            const isVid = p.image_url && p.image_url.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i);
+            return `
+            <div class="csl${i===0?' active':''}">
+              ${isVid 
+                ? `<video src="${p.image_url}" autoplay loop muted playsinline onerror="this.style.display='none'"></video>` 
+                : `<img src="${p.image_url}" alt="Birthday moment" loading="lazy" onerror="this.src='${BLANK}'"/>`
+              }
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <button class="cbtn prev" id="bpPrev" aria-label="Previous moment">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="cbtn next" id="bpNext" aria-label="Next moment">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="cdots">
+        ${pics.map((_,i)=>`<div class="dot${i===0?' a':''}"></div>`).join('')}
+      </div>
+    </div>`;
   sec.style.display='block';
+
+  const track  = document.getElementById('bpTrack');
+  const slides = box.querySelectorAll('.csl');
+  const dots   = box.querySelectorAll('.dot');
+  let cur=0, auto;
+
+  function go(n){
+    slides[cur].classList.remove('active'); 
+    dots[cur].classList.remove('a');
+    cur=((n%pics.length)+pics.length)%pics.length;
+    track.style.transform=`translateX(-${cur*100}%)`;
+    slides[cur].classList.add('active'); 
+    dots[cur].classList.add('a');
+  }
+  
+  let isPaused = false;
+  function resetAuto(){
+    clearInterval(auto);
+    auto=setInterval(()=>{
+      if(!isPaused) go(cur+1);
+    }, 4000);
+  }
+
+  document.getElementById('bpPrev').onclick=()=>{go(cur-1);resetAuto();};
+  document.getElementById('bpNext').onclick=()=>{go(cur+1);resetAuto();};
+  dots.forEach((d,i)=>d.onclick=()=>{go(i);resetAuto();});
+
+  // Keyboard navigation support for carousel
+  const carouselKeyHandler = (e) => {
+    if (box.closest(':hover')) {
+      if (e.key === 'ArrowLeft') { go(cur-1); resetAuto(); }
+      if (e.key === 'ArrowRight') { go(cur+1); resetAuto(); }
+    }
+  };
+  document.addEventListener('keydown', carouselKeyHandler);
+
+  // Pause auto-slide on hover/touch
+  box.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') isPaused = true; });
+  box.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') isPaused = false; });
+  box.addEventListener('touchstart', () => isPaused = true, { passive: true });
+  box.addEventListener('touchend', () => { setTimeout(() => isPaused = false, 2000) });
+
+  resetAuto();
+
+  let sx=0;
+  const vp=box.querySelector('.cvp');
+  vp.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  vp.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>45){go(cur+(dx<0?1:-1));resetAuto();}
+  });
 }
 
 
